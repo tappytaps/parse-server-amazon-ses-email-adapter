@@ -1,5 +1,5 @@
 import { MailAdapter } from 'parse-server/lib/Adapters/Email/MailAdapter';
-import AmazonSES from 'amazon-ses-mailer';
+import AmazonSES from 'node-ses';
 import template from 'lodash.template';
 import co from 'co';
 import fs from 'fs';
@@ -40,7 +40,11 @@ class AmazonSESAdapter extends MailAdapter {
         throw new Error('AmazonSESAdapter template callback is not a function.');
     });
 
-    this.ses = new AmazonSES(accessKeyId, secretAccessKey, region);
+    this.ses = new AmazonSES.createClient({
+      key: accessKeyId, 
+      secret: secretAccessKey, 
+      amazon: `https://email.${region}.amazonaws.com`
+    });
     this.fromAddress = fromAddress;
     this.templates = templates;
 
@@ -152,15 +156,13 @@ class AmazonSESAdapter extends MailAdapter {
         from: message.from,
         to: [message.to],
         subject: message.subject,
-        body: {
-          text: message.text,
-          html: message.html,
-        },
+        altText: message.text,
+        message: message.html
       };
 
     }).then(payload => {
       return new Promise((resolve, reject) => {
-        this.ses.send(payload, (error, data) => {
+        this.ses.sendEmail(payload, (error, data) => {
           if (error) reject(error);
           resolve(data);
         });

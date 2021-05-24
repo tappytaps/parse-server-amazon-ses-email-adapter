@@ -28,9 +28,9 @@
 	"homepage": "https://github.com/ecohealthalliance/parse-server-amazon-ses-email-adapter#readme",
 	"dependencies": {
 		"@babel/polyfill": "^7.4.4",
-		"amazon-ses-mailer": "*",
 		"co": "*",
 		"lodash.template": "*",
+		"node-ses": "*",
 		"parse-server": "*"
 	},
 	"devDependencies": {
